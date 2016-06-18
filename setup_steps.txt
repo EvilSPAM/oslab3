@@ -1,0 +1,40 @@
+//I started setting up with latest LTS 16.04 but there were some bugs and instructions needed some changes.
+// I wanted to shift to 13.10 because this is what they have used it in their experiment but 13.10 is already end of Life. Hence I used Ubuntu 14.04(LTS) over VirtualBox for this setup. 
+
+apt-get remove libreoffice-common
+apt-get autoremove
+apt-get update
+apt-get upgrade
+reboot
+install guest modules(virtualbox)
+reboot
+apt-get install openssh-server
+restart virtualbox network in bridge mode. 
+connect with ssh
+apt-get install gcc g++ make
+apt-get install build-essential mysql-server autoconf
+
+mysql password : rootuser
+
+apt-get install git
+git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-eabi-4.6
+apt-get install libstdc++6:i386 zlib1g:i386
+apt-get install openjdk-7-jdk maven //installed openjdk instead of oracle java
+
+echo "JAVA_HOME=/lib/jvm/java-7-openjdk-amd64" | cat >> /etc/environment
+
+wget https://dl.google.com/dl/android/studio/ide-zips/2.1.2.0/android-studio-ide-143.2915827-linux.zip       //android studio for linux
+wget https://dl.google.com/android/android-sdk_r24.4.1-linux.tgz //just the android sdk command line tols. This should also suffice.
+
+wget http://dl.google.com/android/repository/android-ndk-r11c-linux-x86_64.zip
+
+mysql -u root -p
+CREATE USER 'grinder'@'localhost' IDENTIFIED BY 'grinder';
+
+GRANT ALL PRIVILEGES ON grinder.* TO 'grinder'@'localhost';
+FLUSH PRIVILEGES;
+
+git clone https://github.com/DEEDS-TUD/PAIN.git android_fi
+cd android_fi
+git submodule update --init
+
