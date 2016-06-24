@@ -1,0 +1,5 @@
+The PAIN experiments show that parallel injection can significantly improve experiment throughput.
+However, PAIN also impairs the result accuracy, related both to the choice of timeout values and the
+degree of parallelism.
+
+As such, the experiments must be fine-tuned to fit the situation.

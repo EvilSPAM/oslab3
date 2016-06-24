@@ -1,0 +1,1 @@
+The purpose of the PAIN experiments is to validate if parallel injection increases the throughput of SFI experiments and if it changes the results.
