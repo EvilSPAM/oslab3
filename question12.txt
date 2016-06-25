@@ -1,0 +1,3 @@
+GRINDER is an open-source, generalist FI tool.
+
+GRINDER's advantages are the freely available source code due to its licensing, as well as its adaptablity to different scenarios due to its design.

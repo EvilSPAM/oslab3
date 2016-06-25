@@ -1,0 +1,9 @@
+PAIN:
+The PAIN paper proposes that FI experiments can be sped up greatly through parallelising the different experiments.
+It further raises the questions, what impact parallelisation has on experiment throughput, as well as result accuracy. 
+The paper also investigates, whether or not the parallelization can be tuned to achieve both an increase in throughput, as well as avoiding result inaccuracy.
+Result accuracy is related to both degree of parallelizations and choice of timeout values. Guidelines are provided for fine tuning to achieve the best results.
+
+GRINDER:
+The GRINDER paper introduces the GRINDER tool. GRINDER is an open-source generalist FI tool, designed to be capable of different FI techniques, even those unforeseen by their authors.
+The tool uses a unique infrastructure that allows a high level of code reuse, ranging between 54.5% and 72%.
