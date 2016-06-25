@@ -14,6 +14,7 @@ connect with ssh
 apt-get install gcc g++ make
 apt-get install build-essential mysql-server autoconf
 
+
 mysql password : rootuser
 
 apt-get install git
@@ -37,4 +38,159 @@ FLUSH PRIVILEGES;
 git clone https://github.com/DEEDS-TUD/PAIN.git android_fi
 cd android_fi
 git submodule update --init
+
+cd ../
+tools/android update sdk --no-ui
+
+tools/android
+select ARM EABI v7a system image and install
+
+git submodule update --init //already did no need now.
+cd ..
+unzip android-ndk-r11c-linux-x86_64.zip
+
+cd android_fi/
+config/envgen.sh
+select 1
+// ERROR: Encountered 2 invalid Android dev paths!
+       Cannot continue!
+ANDROID_ARM_BUILD_HOME = <invalid path>  (fail)
+ANDROID_ARM_BUILD_BIN = <invalid path>/bin  (fail)
+
+//most probably because we didn't created an avd
+
+ cd android-sdk-linux/
+tools/android create avd -n oslb3avd -t 19
+//results : Auto-selecting single ABI armeabi-v7a
+Created AVD 'oslb3avd' based on Google APIs (Google Inc.), ARM (armeabi-v7a) processor,
+with the following hardware config:
+hw.lcd.density=240
+hw.ramSize=512
+vm.heapSize=48
+
+cd ../android_fi
+config/envgen.sh
+//same error
+//no. AVD was not the problem but google toolchain was the culprit possibly
+
+git clone https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-eabi-4.6
+
+cd android_fi
+config/envgen.sh
+//ERROR: 
+AFI_VSYSIMG = ${ANDROID_HOME}/system-images/android-/default/armeabi-v7a/system.img  (fail)
+AFI_NDK_SYSROOT = ${ANDROID_NDK_HOME}/platforms/android-/arch-arm  (fail)
+ERROR: Encountered 1 invalid Android FI paths!
+       Generated script must be edited manually.
+Writing environment script to [env.sh]...
+Creating a Makefile-compatible version...
+Script run complete, exiting with an error due to unset paths:
+
+
+Please fix manually.
+
+
+//possible SOlution missing afi and avd api version and edit following 
+export AFI_AVD_API="19" // in env.sh
+
+source env.sh
+cd goldfish_kernel 
+patch -p1 -i ../config/gpl_goldfish.patch
+
+AFI_HOME/grinder-lkm $ make
+//ERROR: In file included from <command-line>:0:0:
+/home/sum-it/oslab3/android_fi/goldfish_kernel/include/linux/kconfig.h:4:32: fatal error: generated/autoconf.h: No such file or directory
+compilation terminated.
+
+//should be kernel header problem but they are installed
+
+sudo apt-get install apt-file
+apt-file update
+
+cd ..
+cp /boot/config-3.19.0-61-generic goldfish_kernel/.config
+
+cd grinder-lkm
+make
+
+//ERROR: Kernel configuration is invalid.
+         include/generated/autoconf.h or include/config/auto.conf are missing.
+         Run 'make oldconfig && make prepare' on kernel src to fix it.
+
+
+  WARNING: Symbol version dump /home/sum-it/oslab3/android_fi/goldfish_kernel/Module.symvers
+           is missing; modules will have no dependencies and modversions.
+
+//for someone installing module-assistant did the trick. Didn't work
+
+cd ../goldfish_kernel
+
+make oldconfig && make prepare //copied config file from boot directory first as .config
+
+//removed first error second is still there:
+WARNING: Symbol version dump /home/sum-it/oslab3/android_fi/goldfish_kernel/Module.symvers
+           is missing; modules will have no dependencies and modversions.
+
+  CC [M]  /home/sum-it/oslab3/android_fi/grinder-lkm/grinder_main.o
+/bin/sh: 1: scripts/genksyms/genksyms: not found
+make[2]: *** [/home/sum-it/oslab3/android_fi/grinder-lkm/grinder_main.o] Error 127
+
+cd ../goldfish_kernel
+make prepare scripts
+
+//Now worked :)
+
+cd ../sar-android/sysstat-android/
+
+make
+cd ../../cande/cande_light_detector/
+
+make android 
+cd ../cande_heavy_detector/
+make android 
+cd ../../fault_injection_scripts/
+mkdir lkm
+//Downloaded mutants and extracted in above directory
+
+cd ~/oslab3/android_fi/workload
+ndk-build
+
+ant debug
+//Error: JAVA_HOME is not defined correctly.
+  We cannot execute /lib/jvm/java-7-openjdk-amd64/bin/java
+export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
+
+ant debug
+//BUILD FAILED
+/home/sum-it/oslab3/android-sdk-linux/tools/ant/build.xml:888: The following error occurred while executing this line:
+/home/sum-it/oslab3/android-sdk-linux/tools/ant/build.xml:890: The following error occurred while executing this line:
+/home/sum-it/oslab3/android-sdk-linux/tools/ant/build.xml:902: The following error occurred while executing this line:
+/home/sum-it/oslab3/android-sdk-linux/tools/ant/build.xml:283: null returned: 1
+
+
+//run android and remove newer android build tools 
+
+//worked :)
+
+cd ../scripts
+./gen-userdata-image.sh
+//Error // have to wait sometime to get emulator running but better check logs 
+emulator: ERROR: This AVD's configuration is missing a kernel file!!
+emulator: ERROR: ANDROID_SDK_ROOT is undefined
+
+
+
+Move to android sdk directory and move to tools directory
+run android with avd argument like "android avd"
+In my case sd card size wasn't there I made it 20 and API level was 15 changed it to 20
+Restarted script. WOrked :)
+
+//somehow it wasn't killing the emulator while ending the script I myself killed the emulator from other process.
+
+./gen-sdcard-image.sh
+
+./start_android.sh
+
+//ERRORi emulator: ERROR: Invalid or missing kernel image file: /home/sum-it/oslab3/android_fi/goldfish_kernel/arch/arm/boot/zImage
+
 
